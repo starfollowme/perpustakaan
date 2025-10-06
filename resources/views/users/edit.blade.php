@@ -25,18 +25,23 @@
                         @method('PUT')
                         <div class="form-group mb-3">
                             <label for="name">Nama:</label>
-                            <input type="text" name="name" class="form-control" placeholder="Masukkan Nama" value="{{ $user->name }}">
+                            <input type="text" name="name" id="name" class="form-control" placeholder="Masukkan Nama" value="{{ old('name', $user->name) }}">
                         </div>
                         <div class="form-group mb-3">
                             <label for="email">Email:</label>
-                            <input type="email" name="email" class="form-control" placeholder="Masukkan Email" value="{{ $user->email }}">
+                            <input type="email" name="email" id="email" class="form-control" placeholder="Masukkan Email" value="{{ old('email', $user->email) }}">
                         </div>
                         <div class="form-group mb-3">
                             <label for="password">Password: <small class="text-muted">(Kosongkan jika tidak ingin mengubah password)</small></label>
-                            <input type="password" name="password" class="form-control" placeholder="Masukkan Password Baru">
+                            <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan Password Baru">
                         </div>
                         <div class="form-group mb-3">
-                            <p class="mb-0 text-muted">Akses pengguna ini tetap sebagai Admin.</p>
+                            <label for="role">Role Pengguna:</label>
+                            <select name="role" id="role" class="form-select">
+                                <option value="">-- Pilih Role --</option>
+                                <option value="admin" {{ old('role', $user->role) === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="user" {{ old('role', $user->role) === 'user' ? 'selected' : '' }}>User</option>
+                            </select>
                         </div>
                         <div class="form-group mb-3">
                             <button type="submit" class="btn btn-primary">Update</button>

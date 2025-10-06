@@ -36,8 +36,8 @@
                         <button type="submit" class="btn btn-primary">Login</button>
                     </div>
                 </form>
-                <div class="mt-3 text-center text-muted">
-                    <small>Hubungi administrator bila Anda membutuhkan akun.</small>
+                <div class="mt-3 text-center">
+                    <small class="text-muted">Belum punya akun? <a href="{{ route('register') }}">Daftar sekarang</a>.</small>
                 </div>
             </div>
         </div>

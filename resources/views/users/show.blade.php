@@ -19,7 +19,11 @@
                     </div>
                     <div class="form-group mb-3">
                         <strong>Hak Akses:</strong>
-                        Admin
+                        {{ ucfirst($user->role) }}
+                    </div>
+                    <div class="form-group mb-3">
+                        <strong>Total Buku Dikelola:</strong>
+                        {{ $user->books_count }}
                     </div>
                     <div class="form-group mb-3">
                         <strong>Tanggal Registrasi:</strong>

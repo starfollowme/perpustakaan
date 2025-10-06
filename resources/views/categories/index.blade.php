@@ -5,11 +5,11 @@
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="h4 mb-1">Daftar Pengguna</h2>
-            <p class="text-muted mb-0">Kelola data pengguna sistem</p>
+            <h2 class="h4 mb-1">Daftar Kategori</h2>
+            <p class="text-muted mb-0">Kelola kategori buku perpustakaan</p>
         </div>
-        <a href="{{ route('users.create') }}" class="btn btn-primary">
-            <i class="bi bi-plus-circle me-1"></i>Tambah Pengguna
+        <a href="{{ route('categories.create') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>Tambah Kategori
         </a>
     </div>
 
@@ -25,16 +25,16 @@
     <!-- Search Box -->
     <div class="card mb-4">
         <div class="card-body">
-            <form method="GET" action="{{ route('users.index') }}">
+            <form method="GET" action="{{ route('categories.index') }}">
                 <div class="input-group">
                     <input type="text" name="search" class="form-control"
-                           placeholder="Cari nama, email, atau role..."
+                           placeholder="Cari nama kategori atau deskripsi..."
                            value="{{ $search }}">
                     <button class="btn btn-outline-secondary" type="submit">
                         <i class="bi bi-search"></i> Cari
                     </button>
                     @if($search)
-                    <a href="{{ route('users.index') }}" class="btn btn-outline-danger">
+                    <a href="{{ route('categories.index') }}" class="btn btn-outline-danger">
                         <i class="bi bi-x-circle"></i> Reset
                     </a>
                     @endif
@@ -43,60 +43,53 @@
         </div>
     </div>
 
-    <!-- Users Table -->
+    <!-- Categories Table -->
     <div class="card">
         <div class="card-body">
-            @if($users->count() > 0)
+            @if($categories->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
                             <tr>
                                 <th width="50">No</th>
-                                <th>Nama</th>
-                                <th>Email</th>
-                                <th>Role</th>
-                                <th width="300" class="text-center">Aksi</th>
+                                <th>Nama Kategori</th>
+                                <th>Deskripsi</th>
+                                <th width="120" class="text-center">Total Buku</th>
+                                <th width="200" class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($users as $user)
+                            @foreach ($categories as $category)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                             style="width: 40px; height: 40px; font-size: 14px; font-weight: 500">
-                                            {{ strtoupper(substr($user->name, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <div class="fw-semibold">{{ $user->name }}</div>
-                                        </div>
-                                    </div>
+                                    <div class="fw-semibold">{{ $category->nama }}</div>
                                 </td>
-                                <td>{{ $user->email }}</td>
                                 <td>
-                                    <span class="badge {{ $user->role == 'admin' ? 'bg-primary' : 'bg-secondary' }}">
-                                        {{ ucfirst($user->role) }}
+                                    @if($category->deskripsi)
+                                        {{ Str::limit($category->deskripsi, 50) }}
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary rounded-pill">
+                                        {{ $category->books_count }}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ route('users.show', $user->id) }}"
-                                           class="btn btn-sm btn-outline-info"
-                                           title="Detail">
-                                            Detail
-                                        </a>
-                                        <a href="{{ route('users.edit', $user->id) }}"
+                                        <a href="{{ route('categories.edit', $category->id) }}"
                                            class="btn btn-sm btn-outline-primary"
                                            title="Edit">
                                             Edit
                                         </a>
-                                        <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="d-inline">
+                                        <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
                                                     class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('Hapus pengguna {{ $user->name }}?')"
+                                                    onclick="return confirm('Hapus kategori {{ $category->nama }}?')"
                                                     title="Hapus">
                                                 Hapus
                                             </button>
@@ -113,8 +106,8 @@
                 @if($search)
                 <div class="mt-3 text-center">
                     <small class="text-muted">
-                        Menampilkan {{ $users->count() }} hasil untuk "{{ $search }}"
-                        <a href="{{ route('users.index') }}" class="text-decoration-none ms-2">
+                        Menampilkan {{ $categories->count() }} hasil untuk "{{ $search }}"
+                        <a href="{{ route('categories.index') }}" class="text-decoration-none ms-2">
                             Tampilkan semua
                         </a>
                     </small>
@@ -124,24 +117,24 @@
             @else
                 <!-- Empty State -->
                 <div class="text-center py-5">
-                    <i class="bi bi-people display-1 text-muted"></i>
+                    <i class="bi bi-tags display-1 text-muted"></i>
                     <h5 class="mt-3 text-muted">
                         @if($search)
-                            Tidak ada pengguna ditemukan
+                            Tidak ada kategori ditemukan
                         @else
-                            Belum ada pengguna
+                            Belum ada kategori
                         @endif
                     </h5>
                     <p class="text-muted mb-4">
                         @if($search)
                             Coba gunakan kata kunci lain
                         @else
-                            Mulai dengan menambahkan pengguna pertama
+                            Mulai dengan menambahkan kategori pertama
                         @endif
                     </p>
                     @if(!$search)
-                    <a href="{{ route('users.create') }}" class="btn btn-primary">
-                        <i class="bi bi-plus-circle me-1"></i>Tambah Pengguna
+                    <a href="{{ route('categories.create') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>Tambah Kategori
                     </a>
                     @endif
                 </div>
@@ -175,10 +168,9 @@
 
     .badge {
         font-size: 0.75em;
-        padding: 0.35em 0.65em;
+        padding: 0.5em 0.75em;
     }
 
-    /* Style untuk tombol aksi */
     .btn-sm {
         min-width: 70px;
     }

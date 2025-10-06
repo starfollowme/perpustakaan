@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <h5>Selamat datang, {{ Auth::user()->name }}!</h5>
                     <p>Anda login sebagai Admin.</p>
-                    
+
                     <div class="row mt-4">
                         <div class="col-md-4">
                             <div class="card bg-info text-white">

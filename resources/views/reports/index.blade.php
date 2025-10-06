@@ -67,10 +67,68 @@
             </div>
         </div>
 
-        <!-- Buku berdasarkan Kategori -->
-        <div class="col-md-12">
+        <!-- Buku berdasarkan Admin -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5>Buku dikelola per Admin</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nama Admin</th>
+                                <th>Jumlah Buku</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($booksByAdmin as $admin)
+                            <tr>
+                                <td>{{ $admin->name }}</td>
+                                <td>{{ $admin->books_count }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="2" class="text-center">Belum ada buku yang terhubung dengan admin.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buku berdasarkan Penerbit -->
+        <div class="col-md-4 mb-4">
             <div class="card">
                 <div class="card-header bg-success text-white">
+                    <h5>Buku berdasarkan Penerbit</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Penerbit</th>
+                                <th>Jumlah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($booksByPublisher as $book)
+                            <tr>
+                                <td>{{ $book->penerbit }}</td>
+                                <td>{{ $book->total }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buku berdasarkan Kategori -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
                     <h5>Buku berdasarkan Kategori</h5>
                 </div>
                 <div class="card-body">
@@ -82,12 +140,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($booksByCategory as $book)
+                            @forelse($booksByCategory as $category)
                             <tr>
-                                <td>{{ $book->category }}</td>
-                                <td>{{ $book->total }}</td>
+                                <td>{{ $category->nama }}</td>
+                                <td>{{ $category->books_count }}</td>
                             </tr>
-                            @endforeach
+                            @empty
+                            <tr>
+                                <td colspan="2" class="text-center">Belum ada kategori yang dipakai.</td>
+                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>

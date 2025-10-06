@@ -11,10 +11,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
-        return view('users.index', compact('users'));
+        $search = $request->get('search');
+
+        $users = User::when($search, function($query) use ($search) {
+            return $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('role', 'like', "%{$search}%");
+        })->get();
+
+        return view('users.index', compact('users', 'search'));
     }
 
     /**
@@ -34,13 +41,14 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
+            'role' => 'required|in:admin,user',
         ]);
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',
+            'role' => $request->role,
         ]);
 
         return redirect()->route('users.index')->with('success', 'Pengguna berhasil ditambahkan!');
@@ -51,7 +59,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::withCount('books')->findOrFail($id);
         return view('users.show', compact('user'));
     }
 
@@ -74,12 +82,13 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:users,email,' . $id,
+            'role' => 'required|in:admin,user',
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
-            'role' => 'admin',
+            'role' => $request->role,
         ];
 
         if ($request->filled('password')) {

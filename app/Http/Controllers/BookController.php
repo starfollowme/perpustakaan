@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class BookController extends Controller
@@ -10,10 +11,52 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::all();
-        return view('books.index', compact('books'));
+        $search = trim((string) $request->query('search', ''));
+
+        $books = Book::with(['user', 'category'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('judul', 'like', "%{$search}%")
+                      ->orWhere('penulis', 'like', "%{$search}%")
+                      ->orWhere('penerbit', 'like', "%{$search}%")
+                      ->orWhere('tahun_terbit', 'like', "%{$search}%")
+                      ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                          $categoryQuery->where('nama', 'like', "%{$search}%");
+                      });
+                });
+            })
+            ->latest()
+            ->get();
+
+        return view('books.index', compact('books', 'search'));
+    }
+
+    /**
+     * Display a public catalog for authenticated users.
+     */
+    public function catalog(Request $request)
+    {
+        $search = trim((string) $request->query('search', ''));
+
+        $books = Book::with(['category', 'user'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('judul', 'like', "%{$search}%")
+                      ->orWhere('penulis', 'like', "%{$search}%")
+                      ->orWhere('penerbit', 'like', "%{$search}%")
+                      ->orWhere('tahun_terbit', 'like', "%{$search}%")
+                      ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                          $categoryQuery->where('nama', 'like', "%{$search}%");
+                      });
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('user.books', compact('books', 'search'));
     }
 
     /**
@@ -21,7 +64,9 @@ class BookController extends Controller
      */
     public function create()
     {
-        return view('books.create');
+        $categories = Category::orderBy('nama')->get();
+
+        return view('books.create', compact('categories'));
     }
 
     /**
@@ -29,14 +74,19 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'judul' => 'required',
             'penulis' => 'required',
             'penerbit' => 'required',
             'tahun_terbit' => 'required|numeric',
+            'deskripsi' => 'nullable',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
-        Book::create($request->all());
+        $book = new Book($validated);
+        $book->user()->associate($request->user());
+        $book->save();
+
         return redirect()->route('books.index')->with('success', 'Buku berhasil ditambahkan!');
     }
 
@@ -45,7 +95,8 @@ class BookController extends Controller
      */
     public function show(string $id)
     {
-        $book = Book::findOrFail($id);
+        $book = Book::with(['user', 'category'])->findOrFail($id);
+
         return view('books.show', compact('book'));
     }
 
@@ -55,7 +106,9 @@ class BookController extends Controller
     public function edit(string $id)
     {
         $book = Book::findOrFail($id);
-        return view('books.edit', compact('book'));
+        $categories = Category::orderBy('nama')->get();
+
+        return view('books.edit', compact('book', 'categories'));
     }
 
     /**
@@ -63,15 +116,17 @@ class BookController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $request->validate([
+        $validated = $request->validate([
             'judul' => 'required',
             'penulis' => 'required',
             'penerbit' => 'required',
             'tahun_terbit' => 'required|numeric',
+            'deskripsi' => 'nullable',
+            'category_id' => 'required|exists:categories,id',
         ]);
 
         $book = Book::findOrFail($id);
-        $book->update($request->all());
+        $book->update($validated);
 
         return redirect()->route('books.index')->with('success', 'Buku berhasil diperbarui!');
     }

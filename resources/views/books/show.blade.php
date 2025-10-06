@@ -23,12 +23,26 @@
                 <p>{{ $book->tahun_terbit }}</p>
             </div>
             <div class="mb-3">
+                <strong>Kategori:</strong>
+                <p>{{ $book->category?->nama ?? 'Tidak diketahui' }}</p>
+            </div>
+            <div class="mb-3">
                 <strong>Deskripsi:</strong>
                 <p>{{ $book->deskripsi ?? 'Tidak ada deskripsi' }}</p>
             </div>
             <div class="mb-3">
+                <strong>Pengelola:</strong>
+                <p>{{ $book->user?->name ?? 'Tidak diketahui' }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Diperbarui pada:</strong>
+                <p>{{ $book->updated_at->format('d-m-Y H:i') }}</p>
+            </div>
+            <div class="mb-3">
                 <a href="{{ route('books.index') }}" class="btn btn-secondary">Kembali</a>
-                <a href="{{ route('books.edit', $book->id) }}" class="btn btn-primary">Edit</a>
+                @auth
+                    <a href="{{ route('books.edit', $book->id) }}" class="btn btn-primary">Edit</a>
+                @endauth
             </div>
         </div>
     </div>

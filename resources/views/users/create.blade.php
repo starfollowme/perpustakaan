@@ -24,18 +24,23 @@
                         @csrf
                         <div class="form-group mb-3">
                             <label for="name">Nama:</label>
-                            <input type="text" name="name" class="form-control" placeholder="Masukkan Nama" value="{{ old('name') }}">
+                            <input type="text" name="name" id="name" class="form-control" placeholder="Masukkan Nama" value="{{ old('name') }}">
                         </div>
                         <div class="form-group mb-3">
                             <label for="email">Email:</label>
-                            <input type="email" name="email" class="form-control" placeholder="Masukkan Email" value="{{ old('email') }}">
+                            <input type="email" name="email" id="email" class="form-control" placeholder="Masukkan Email" value="{{ old('email') }}">
                         </div>
                         <div class="form-group mb-3">
                             <label for="password">Password:</label>
-                            <input type="password" name="password" class="form-control" placeholder="Masukkan Password">
+                            <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan Password">
                         </div>
                         <div class="form-group mb-3">
-                            <p class="mb-0 text-muted">Pengguna baru akan otomatis mendapat akses Admin.</p>
+                            <label for="role">Role Pengguna:</label>
+                            <select name="role" id="role" class="form-select">
+                                <option value="">-- Pilih Role --</option>
+                                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
+                                <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>User</option>
+                            </select>
                         </div>
                         <div class="form-group mb-3">
                             <button type="submit" class="btn btn-primary">Simpan</button>
